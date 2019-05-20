@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="lewiszlw.redenvelope.mapper.RedEnvelopeDetailMapper" >
+
+    <sql id="baseColumns" >
+        `user`, `type`, amount, `size`, remain_money, remain_size, status, created_time, updated_time
+    </sql>
+
+    <insert id="insertOne" parameterType="lewiszlw.redenvelope.entity.EnvelopeDetailEntity" useGeneratedKeys="true" keyProperty="id">
+        insert into envelope_detail
+        (<include refid="baseColumns" />)
+        values
+        (
+        #{envelopeDetailEntity.user},
+        #{envelopeDetailEntity.type, typeHandler=EnumTypeHandler},
+        #{envelopeDetailEntity.amount},
+        #{envelopeDetailEntity.size},
+        #{envelopeDetailEntity.remainMoney},
+        #{envelopeDetailEntity.remainSize},
+        #{envelopeDetailEntity.status, typeHandler=EnumTypeHandler},
+        now(),
+        now()
+        )
+    </insert>
+
+</mapper>

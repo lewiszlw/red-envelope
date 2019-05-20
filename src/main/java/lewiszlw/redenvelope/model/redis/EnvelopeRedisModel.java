@@ -1,11 +1,11 @@
-package lewiszlw.redenvelope.entity;
+package lewiszlw.redenvelope.model.redis;
 
-import lewiszlw.redenvelope.constant.EnvelopeStatus;
 import lewiszlw.redenvelope.constant.EnvelopeType;
+import lewiszlw.redenvelope.entity.EnvelopeDetailEntity;
+import lewiszlw.redenvelope.entity.EnvelopeGrabberEntity;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * Desc:
@@ -14,13 +14,11 @@ import java.util.Date;
  * @date 2019-05-20
  */
 @Data
-@Accessors(chain = true)
-public class EnvelopeDetailEntity {
-
+public class EnvelopeRedisModel {
     /**
-     * 主键
+     * 红包id
      */
-    private Integer id;
+    private Integer envelopeId;
 
     /**
      * 发红包者
@@ -53,17 +51,7 @@ public class EnvelopeDetailEntity {
     private Integer remainSize;
 
     /**
-     * 是否过期
+     * 红包抢到者情况
      */
-    private EnvelopeStatus status;
-
-    /**
-     * 创建时间
-     */
-    private Date createdTime;
-
-    /**
-     * 更新时间
-     */
-    private Date updatedTime;
+    private List<GrabbingDetail> grabbingDetails;
 }
