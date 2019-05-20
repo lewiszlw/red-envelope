@@ -3,7 +3,7 @@
 
 <mapper namespace="lewiszlw.redenvelope.mapper.RedEnvelopeDetailMapper" >
 
-    <resultMap id="resultMap" type="lewiszlw.redenvelope.entity.EnvelopeDetailEntity">
+    <resultMap id="baseResultMap" type="lewiszlw.redenvelope.entity.EnvelopeDetailEntity">
         <id column="id" property="id"/>
         <result column="user" property="user"/>
         <result column="type" property="type" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
@@ -36,5 +36,18 @@
         now()
         )
     </insert>
+
+    <select id="selectOne" parameterType="java.lang.Integer" resultMap="baseResultMap">
+        select * from envelope_detail
+        where id = #{envelopeId}
+    </select>
+
+    <update id="updateOne" >
+        update envelope_detail
+        set
+        remain_money = #{envelopeDetailEntity.remainMoney},
+        remain_size = #{envelopeDetailEntity.remainSize},
+        updated_time = now()
+    </update>
 
 </mapper>

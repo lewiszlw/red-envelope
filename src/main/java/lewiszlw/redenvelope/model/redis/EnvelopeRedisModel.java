@@ -1,7 +1,7 @@
 package lewiszlw.redenvelope.model.redis;
 
-import lewiszlw.redenvelope.constant.EnvelopeStatus;
 import lewiszlw.redenvelope.constant.EnvelopeType;
+import lewiszlw.redenvelope.constant.ExistentStatus;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -21,6 +21,11 @@ public class EnvelopeRedisModel {
      */
     private Integer envelopeId;
 
+    /**
+     * 数据是否存在
+     * @see ExistentStatus#NON_EXISTENT 红包不存在，用于防止缓存穿透
+     */
+    private ExistentStatus existentStatus;
     /**
      * 发红包者
      */
@@ -61,9 +66,4 @@ public class EnvelopeRedisModel {
      * 红包抢到情况
      */
     private List<GrabbingDetail> grabbingDetails;
-
-    /**
-     * 红包是否过期
-     */
-    private EnvelopeStatus status;
 }

@@ -25,9 +25,6 @@ public class RedEnvelopeController {
     @Autowired
     private RedEnvelopeService redEnvelopeService;
 
-    @Autowired
-    private RedEnvelopeRedisService redEnvelopeRedisService;
-
     /**
      * 创建红包
      */

@@ -6,6 +6,6 @@ package lewiszlw.redenvelope.constant;
  * @author zhanglinwei02
  * @date 2019-05-20
  */
-public enum EnvelopeStatus {
-    Unexpired, Expired;
+public enum ExistentStatus {
+    EXISTENT, NON_EXISTENT;
 }

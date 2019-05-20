@@ -24,7 +24,7 @@ public class EnvelopeGrabberEntity {
      * 红包id
      * 即envelope_detail主键
      */
-    private Integer envelope_id;
+    private Integer envelopeId;
 
     /**
      * 抢到用户

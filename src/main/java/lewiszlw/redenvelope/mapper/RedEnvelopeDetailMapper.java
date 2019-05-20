@@ -18,4 +18,14 @@ public interface RedEnvelopeDetailMapper {
      * 插入一个红包
      */
     Integer insertOne(@Param("envelopeDetailEntity") EnvelopeDetailEntity envelopeDetailEntity);
+
+    /**
+     * 查询红包详情
+     */
+    EnvelopeDetailEntity selectOne(@Param("envelopeId") Integer envelopeId);
+
+    /**
+     * 更新红包详情
+     */
+    Integer updateOne(@Param("envelopeDetailEntity") EnvelopeDetailEntity envelopeDetailEntity);
 }

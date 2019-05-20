@@ -1,6 +1,7 @@
 package lewiszlw.redenvelope.model.redis;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * Desc:
@@ -9,6 +10,7 @@ import lombok.Data;
  * @date 2019-05-20
  */
 @Data
+@Accessors(chain = true)
 public class GrabbingDetail {
 
     /**

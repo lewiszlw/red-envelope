@@ -35,4 +35,13 @@ public class JsonUtils {
             throw new SerializationException(e.getMessage(), e.getCause());
         }
     }
+
+    public static <T> T fromJson(byte[] bytes, Class<T> t) {
+        try {
+            return objectMapper.readValue(bytes, t);
+        } catch (IOException e) {
+            log.error("JSON反序列化异常", e);
+            throw new SerializationException(e.getMessage(), e.getCause());
+        }
+    }
 }

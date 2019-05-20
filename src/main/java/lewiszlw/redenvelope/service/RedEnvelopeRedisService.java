@@ -3,14 +3,12 @@ package lewiszlw.redenvelope.service;
 import lewiszlw.redenvelope.constant.Constants;
 import lewiszlw.redenvelope.converter.RedEnvelopeConverter;
 import lewiszlw.redenvelope.entity.EnvelopeDetailEntity;
-import lewiszlw.redenvelope.exception.LockTimeOutException;
 import lewiszlw.redenvelope.model.redis.EnvelopeRedisModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Desc:
@@ -24,12 +22,21 @@ public class RedEnvelopeRedisService {
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
-    private final static int LOCK_REDIS_TIMEOUT = 10;
+    private final static int LOCK_REDIS_TIMEOUT = 20;
 
-    public void set(EnvelopeDetailEntity envelopeDetailEntity) {
+    public void setAfterCreate(EnvelopeDetailEntity envelopeDetailEntity) {
         EnvelopeRedisModel envelopeRedisModel = RedEnvelopeConverter.convertToEnvelopeRedisModel(envelopeDetailEntity);
         redisTemplate.opsForValue().set(envelopeDetailEntity.getId(),
                 envelopeRedisModel, Constants.ENVELOPE_EXPIRE_TIME, TimeUnit.SECONDS);
+    }
+
+    public void delAndSet() {
+
+    }
+
+    public void set(EnvelopeRedisModel envelopeRedisModel, int timeout) {
+        redisTemplate.opsForValue().set(envelopeRedisModel.getEnvelopeId(),
+                envelopeRedisModel, timeout, TimeUnit.SECONDS);
     }
 
     public EnvelopeRedisModel get(Integer envelopeId) {

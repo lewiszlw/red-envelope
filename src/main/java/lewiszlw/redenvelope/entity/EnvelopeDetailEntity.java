@@ -1,6 +1,5 @@
 package lewiszlw.redenvelope.entity;
 
-import lewiszlw.redenvelope.constant.EnvelopeStatus;
 import lewiszlw.redenvelope.constant.EnvelopeType;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -51,11 +50,6 @@ public class EnvelopeDetailEntity {
      * 红包余下份数
      */
     private Integer remainSize;
-
-    /**
-     * 是否过期
-     */
-    private EnvelopeStatus status;
 
     /**
      * 创建时间
