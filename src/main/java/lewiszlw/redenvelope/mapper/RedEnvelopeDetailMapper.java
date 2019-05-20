@@ -1,6 +1,7 @@
 package lewiszlw.redenvelope.mapper;
 
 import lewiszlw.redenvelope.entity.EnvelopeDetailEntity;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
  * @date 2019-05-20
  */
 @Repository
+@Mapper
 public interface RedEnvelopeDetailMapper {
     /**
      * 插入一个红包

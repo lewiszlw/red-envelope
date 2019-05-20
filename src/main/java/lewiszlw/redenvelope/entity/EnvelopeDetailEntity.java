@@ -35,7 +35,7 @@ public class EnvelopeDetailEntity {
     /**
      * 红包总额
      */
-    private Long amount;
+    private Integer amount;
 
     /**
      * 红包份数
@@ -45,7 +45,7 @@ public class EnvelopeDetailEntity {
     /**
      * 红包余额
      */
-    private Long remainMoney;
+    private Integer remainMoney;
 
     /**
      * 红包余下份数

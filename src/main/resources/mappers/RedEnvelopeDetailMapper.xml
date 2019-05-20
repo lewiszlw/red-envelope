@@ -3,6 +3,19 @@
 
 <mapper namespace="lewiszlw.redenvelope.mapper.RedEnvelopeDetailMapper" >
 
+    <resultMap id="resultMap" type="lewiszlw.redenvelope.entity.EnvelopeDetailEntity">
+        <id column="id" property="id"/>
+        <result column="user" property="user"/>
+        <result column="type" property="type" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="amount" property="amount"/>
+        <result column="size" property="size"/>
+        <result column="remain_money" property="remainMoney"/>
+        <result column="remain_size" property="remainSize"/>
+        <result column="status" property="status" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+    </resultMap>
+
     <sql id="baseColumns" >
         `user`, `type`, amount, `size`, remain_money, remain_size, status, created_time, updated_time
     </sql>
@@ -13,12 +26,12 @@
         values
         (
         #{envelopeDetailEntity.user},
-        #{envelopeDetailEntity.type, typeHandler=EnumTypeHandler},
+        #{envelopeDetailEntity.type, typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         #{envelopeDetailEntity.amount},
         #{envelopeDetailEntity.size},
         #{envelopeDetailEntity.remainMoney},
         #{envelopeDetailEntity.remainSize},
-        #{envelopeDetailEntity.status, typeHandler=EnumTypeHandler},
+        #{envelopeDetailEntity.status, typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         now(),
         now()
         )

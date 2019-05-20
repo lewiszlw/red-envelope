@@ -1,7 +1,5 @@
 package lewiszlw.redenvelope.algorithm;
 
-import lewiszlw.redenvelope.model.RedEnvelope;
-
 import java.math.BigDecimal;
 import java.util.Random;
 

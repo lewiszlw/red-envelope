@@ -1,9 +1,9 @@
 package lewiszlw.redenvelope.model.redis;
 
+import lewiszlw.redenvelope.constant.EnvelopeStatus;
 import lewiszlw.redenvelope.constant.EnvelopeType;
-import lewiszlw.redenvelope.entity.EnvelopeDetailEntity;
-import lewiszlw.redenvelope.entity.EnvelopeGrabberEntity;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 
@@ -14,6 +14,7 @@ import java.util.List;
  * @date 2019-05-20
  */
 @Data
+@Accessors(chain = true)
 public class EnvelopeRedisModel {
     /**
      * 红包id
@@ -33,7 +34,7 @@ public class EnvelopeRedisModel {
     /**
      * 红包总额
      */
-    private Long amount;
+    private Integer amount;
 
     /**
      * 红包份数
@@ -43,7 +44,7 @@ public class EnvelopeRedisModel {
     /**
      * 红包余额
      */
-    private Long remainMoney;
+    private Integer remainMoney;
 
     /**
      * 红包余下份数
@@ -51,7 +52,18 @@ public class EnvelopeRedisModel {
     private Integer remainSize;
 
     /**
-     * 红包抢到者情况
+     * 红包切分列表
+     * 红包预先分配好每个红包大小，每分配出去一个，remove一个
+     */
+    private List<Integer> allocations;
+
+    /**
+     * 红包抢到情况
      */
     private List<GrabbingDetail> grabbingDetails;
+
+    /**
+     * 红包是否过期
+     */
+    private EnvelopeStatus status;
 }

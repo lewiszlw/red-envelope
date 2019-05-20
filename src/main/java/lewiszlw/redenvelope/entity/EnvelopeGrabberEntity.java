@@ -34,7 +34,7 @@ public class EnvelopeGrabberEntity {
     /**
      * 抢到金额
      */
-    private Long money;
+    private Integer money;
 
     /**
      * 创建时间

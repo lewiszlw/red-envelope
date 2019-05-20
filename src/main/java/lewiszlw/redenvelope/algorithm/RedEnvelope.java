@@ -1,4 +1,4 @@
-package lewiszlw.redenvelope.model;
+package lewiszlw.redenvelope.algorithm;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

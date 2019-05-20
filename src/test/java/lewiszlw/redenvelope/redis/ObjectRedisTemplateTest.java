@@ -19,16 +19,16 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ObjRedisTemplateTest {
+public class ObjectRedisTemplateTest {
 
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
     @Test
     public void testSetAndGet() {
-        redisTemplate.opsForValue().set("test-key", new EnvelopeDetailEntity().setAmount(1000l).setSize(10), 3, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set("test-key", new EnvelopeDetailEntity().setAmount(1000).setSize(10), 3, TimeUnit.SECONDS);
         EnvelopeDetailEntity envelopeDetailEntity = (EnvelopeDetailEntity) redisTemplate.opsForValue().get("test-key");
-        Assert.assertTrue(envelopeDetailEntity.getAmount() == 1000l);
+        Assert.assertTrue(envelopeDetailEntity.getAmount() == 1000);
         Assert.assertTrue(envelopeDetailEntity.getSize() == 10);
     }
 }

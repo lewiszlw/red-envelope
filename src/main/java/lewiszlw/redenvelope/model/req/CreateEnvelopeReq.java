@@ -25,7 +25,7 @@ public class CreateEnvelopeReq {
     /**
      * 红包金额（单位: 分）
      */
-    private Long amount;
+    private Integer amount;
 
     /**
      * 红包份数

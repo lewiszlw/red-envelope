@@ -19,5 +19,5 @@ public class GrabbingDetail {
     /**
      * 抢到红包金额
      */
-    private Long amount;
+    private Integer amount;
 }

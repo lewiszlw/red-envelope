@@ -47,8 +47,14 @@ public class RedEnvelopeController {
      * 抢红包
      */
     @RequestMapping("/grab")
-    public WebResponse grabEnvelope(@RequestParam(value = "envelopeId") Integer envelopeId) {
-        // redis查看红包剩余
+    public WebResponse grabEnvelope(@RequestParam(value = "envelopeId") Integer envelopeId,
+                                    @RequestParam(value = "grabber") String grabber) {
+        // 验收请求参数
+        ValidationResult validationResult = RedEnvelopeValidator.validateGrabEnvelopeReqParam(envelopeId, grabber);
+        if (!validationResult.isPass()) {
+            return validationResult.transformWebResponse();
+        }
+        redEnvelopeService.grabRedEnvelope(envelopeId, grabber);
         return null;
     }
 }
