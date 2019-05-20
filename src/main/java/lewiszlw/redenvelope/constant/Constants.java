@@ -8,4 +8,9 @@ package lewiszlw.redenvelope.constant;
  */
 public class Constants {
 
+    /**
+     * 金额缩放比例
+     */
+    public static int MONEY_SCALE_NUMBER = 100;
+
 }
