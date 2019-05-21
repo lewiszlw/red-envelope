@@ -28,6 +28,10 @@ public class GrabbingResult {
      */
     private Integer amount;
 
+    public WebResponse transformWebResponse() {
+        return WebResponse.createSuccessWebResponse(this);
+    }
+
     public static GrabbingResult createSuccessGrabbingResult(int amount) {
         return new GrabbingResult().setStatus(GrabbingStatus.SUCCESS).setAmount(amount);
     }
@@ -39,4 +43,5 @@ public class GrabbingResult {
     public static GrabbingResult createGrabbingGrabbingResult() {
         return new GrabbingResult().setStatus(GrabbingStatus.GRABBING);
     }
+
 }

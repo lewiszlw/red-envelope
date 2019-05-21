@@ -14,6 +14,7 @@ import lewiszlw.redenvelope.model.redis.GrabbingDetail;
 import lewiszlw.redenvelope.model.req.CreateEnvelopeReq;
 import lewiszlw.redenvelope.mq.RedEnvelopeGrabbingProducer;
 import lewiszlw.redenvelope.util.AllocationUtils;
+import lewiszlw.redenvelope.util.CommonUtils;
 import lewiszlw.redenvelope.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,12 +91,14 @@ public class RedEnvelopeService {
             // 红包不存在，防止缓存穿透
             return GrabbingResult.createFailGrabbingResult();
         }
-        if (envelopeRedisModel.getRemainMoney() > 0 && envelopeRedisModel.getRemainSize() > 0) {
-            // 抢红包
-            return doGrab(envelopeRedisModel, grabber);
+        GrabbingDetail grabbingDetail = CommonUtils.find(envelopeRedisModel.getGrabbingDetails(), gd -> Objects.equals(gd.getGrabber(), grabber));
+        if (grabbingDetail == null
+                && envelopeRedisModel.getRemainMoney() > 0
+                && envelopeRedisModel.getRemainSize() > 0) {
+            // 红包有余份，且该用户未抢到，进行抢红包流程
+            return doGrab(envelopeId, grabber);
         } else {
-            // 红包过期或已抢完
-            GrabbingDetail grabbingDetail = findGrabbingDetail(envelopeRedisModel.getGrabbingDetails(), grabber);
+            // 红包过期已抢完或该用户已抢到
             return grabbingDetail == null ? GrabbingResult.createFailGrabbingResult()
                                             : GrabbingResult.createSuccessGrabbingResult(grabbingDetail.getAmount());
         }
@@ -110,17 +113,28 @@ public class RedEnvelopeService {
             return;
         }
         for (GrabbingMessage grabbingMessage : grabbingMessages) {
-            EnvelopeDetailEntity envelopeDetailEntity = redEnvelopeDetailMapper.selectOne(grabbingMessage.getEnvelopeRedisModel().getEnvelopeId());
+            EnvelopeDetailEntity envelopeDetailEntity = redEnvelopeDetailMapper.selectOne(grabbingMessage.getEnvelopeId());
             if (envelopeDetailEntity == null) {
                 log.error("处理mq消息：查询红包不存在, grabbingMessage: {}", JsonUtils.toJson(grabbingMessage));
                 continue;
             }
-            if (envelopeDetailEntity.getRemainMoney() > 0 && envelopeDetailEntity.getRemainSize() > 0) {
-                // 红包有余份，事务内扣减红包金额
+            // 查看该用户是否已经抢到红包
+            List<EnvelopeGrabberEntity> envelopeGrabberEntities = redEnvelopeGrabberMapper.selectByEnvelopeId(grabbingMessage.getEnvelopeId());
+            EnvelopeGrabberEntity existEnvelopeGrabberEntity = CommonUtils.find(envelopeGrabberEntities,
+                    (envelopeGrabberEntity) -> Objects.equals(envelopeGrabberEntity.getGrabber(), grabbingMessage.getGrabber()));
+
+            if (envelopeDetailEntity.getRemainMoney() > 0
+                    && envelopeDetailEntity.getRemainSize() > 0
+                    && existEnvelopeGrabberEntity == null) {
+                // 红包有余份，且该用户未抢到红包，事务内扣减红包金额
                 allocateAndWriteDB(envelopeDetailEntity, grabbingMessage.getGrabber());
             }
             // 更新缓存
-            redEnvelopeRedisService.delAndSet();
+            EnvelopeDetailEntity currentEnvelopeDetailEntity = redEnvelopeDetailMapper
+                    .selectOne(grabbingMessage.getEnvelopeId());
+            List<EnvelopeGrabberEntity> currentEnvelopeGrabberEntities = redEnvelopeGrabberMapper
+                    .selectByEnvelopeId(grabbingMessage.getEnvelopeId());
+            redEnvelopeRedisService.delAndSet(currentEnvelopeDetailEntity, currentEnvelopeGrabberEntities);
         }
     }
 
@@ -130,7 +144,8 @@ public class RedEnvelopeService {
         Integer remainMoney = envelopeDetailEntity.getRemainMoney();
         // 分配红包金额
         // TODO
-        Integer allocateMoney = AllocationUtils.allocate(remainMoney, remainSize).get(0);
+//        Integer allocateMoney = AllocationUtils.allocate(remainMoney, remainSize).get(0);
+        Integer allocateMoney = AllocationUtils.allocateV2(remainMoney, remainSize);
 
         envelopeDetailEntity.setRemainMoney(remainMoney - allocateMoney);
         envelopeDetailEntity.setRemainSize(remainSize - 1);
@@ -144,22 +159,10 @@ public class RedEnvelopeService {
         );
     }
 
-    private GrabbingDetail findGrabbingDetail(List<GrabbingDetail> grabbingDetails, String grabber) {
-        if (CollectionUtils.isEmpty(grabbingDetails)) {
-            return null;
-        }
-        for (GrabbingDetail grabbingDetail : grabbingDetails) {
-            if (Objects.equals(grabbingDetail.getGrabber(), grabber)) {
-                return grabbingDetail;
-            }
-        }
-        return null;
-    }
-
-    private GrabbingResult doGrab(EnvelopeRedisModel envelopeRedisModel, String grabber) {
+    private GrabbingResult doGrab(Integer envelopeId, String grabber) {
         // 发送mq消息
         redEnvelopeGrabbingProducer.send(JsonUtils.toJson(
-                new GrabbingMessage().setEnvelopeRedisModel(envelopeRedisModel).setGrabber(grabber)));
+                new GrabbingMessage().setEnvelopeId(envelopeId).setGrabber(grabber)));
         // 返回正在抢红包中，客户端轮询查看是否抢红包结果
         return GrabbingResult.createGrabbingGrabbingResult();
     }

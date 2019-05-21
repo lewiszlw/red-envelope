@@ -1,6 +1,5 @@
 package lewiszlw.redenvelope.model.mq;
 
-import lewiszlw.redenvelope.model.redis.EnvelopeRedisModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -14,7 +13,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class GrabbingMessage {
 
-    private EnvelopeRedisModel envelopeRedisModel;
+    private Integer envelopeId;
 
     private String grabber;
 }

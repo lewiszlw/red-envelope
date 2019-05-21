@@ -35,7 +35,7 @@ public class RedEnvelopeValidator {
     public static ValidationResult validateGrabEnvelopeReqParam(Integer envelopeId, String grabber) {
         try {
             Preconditions.checkArgument(envelopeId != null, "红包id为空");
-            Preconditions.checkArgument(envelopeId <= 0, "红包id不正确");
+            Preconditions.checkArgument(envelopeId > 0, "红包id不正确");
             Preconditions.checkArgument(!StringUtils.isEmpty(grabber), "抢红包者为空");
             return ValidationResult.createPassValidationResult();
         } catch (IllegalArgumentException e) {

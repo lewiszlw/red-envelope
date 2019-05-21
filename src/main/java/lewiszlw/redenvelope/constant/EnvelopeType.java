@@ -7,8 +7,9 @@ package lewiszlw.redenvelope.constant;
  * @date 2019-05-20
  */
 public enum EnvelopeType {
+    UNKONWN,
     /**普通红包*/
-    Ordinary,
+    ORDINARY,
     /**拼手气红包*/
-    Grab
+    GRABBING
 }

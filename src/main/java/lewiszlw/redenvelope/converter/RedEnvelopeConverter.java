@@ -37,7 +37,8 @@ public class RedEnvelopeConverter {
                 .setRemainMoney(envelopeDetailEntity.getRemainMoney())
                 .setRemainSize(envelopeDetailEntity.getRemainSize())
                 // 分配金额
-                .setAllocations(AllocationUtils.allocate(envelopeDetailEntity.getRemainMoney(), envelopeDetailEntity.getRemainSize()))
+                // TODO
+//                .setAllocations(AllocationUtils.allocate(envelopeDetailEntity.getRemainMoney(), envelopeDetailEntity.getRemainSize()))
                 .setGrabbingDetails(new ArrayList<>());
     }
 
@@ -50,7 +51,7 @@ public class RedEnvelopeConverter {
             for (EnvelopeGrabberEntity envelopeGrabberEntity: envelopeGrabberEntities) {
                 grabbingDetails.add(new GrabbingDetail()
                         .setGrabber(envelopeGrabberEntity.getGrabber())
-                        .setAmount(envelopeDetailEntity.getAmount())
+                        .setAmount(envelopeGrabberEntity.getMoney())
                 );
             }
         }

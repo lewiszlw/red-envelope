@@ -11,13 +11,12 @@
         <result column="size" property="size"/>
         <result column="remain_money" property="remainMoney"/>
         <result column="remain_size" property="remainSize"/>
-        <result column="status" property="status" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
         <result column="created_time" property="createdTime"/>
         <result column="updated_time" property="updatedTime"/>
     </resultMap>
 
     <sql id="baseColumns" >
-        `user`, `type`, amount, `size`, remain_money, remain_size, status, created_time, updated_time
+        `user`, `type`, amount, `size`, remain_money, remain_size, created_time, updated_time
     </sql>
 
     <insert id="insertOne" parameterType="lewiszlw.redenvelope.entity.EnvelopeDetailEntity" useGeneratedKeys="true" keyProperty="id">
@@ -31,7 +30,6 @@
         #{envelopeDetailEntity.size},
         #{envelopeDetailEntity.remainMoney},
         #{envelopeDetailEntity.remainSize},
-        #{envelopeDetailEntity.status, typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         now(),
         now()
         )
@@ -48,6 +46,7 @@
         remain_money = #{envelopeDetailEntity.remainMoney},
         remain_size = #{envelopeDetailEntity.remainSize},
         updated_time = now()
+        where id = #{envelopeDetailEntity.id}
     </update>
 
 </mapper>
