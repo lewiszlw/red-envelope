@@ -44,4 +44,8 @@ GET http://localhost:8080/red-envelope/grab?envelopeId=1&grabber=lewis
 
 注：envelopeId 为红包id，grabber 为抢红包者
 
+6.验证结果
+
+GET http://localhost:8080/red-envelope/verify?envelopeIds=3,4,5,6
+
 # 压测

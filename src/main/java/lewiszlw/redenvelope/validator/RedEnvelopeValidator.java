@@ -2,10 +2,16 @@ package lewiszlw.redenvelope.validator;
 
 import com.google.common.base.Preconditions;
 import lewiszlw.redenvelope.constant.Constants;
+import lewiszlw.redenvelope.entity.EnvelopeDetailEntity;
+import lewiszlw.redenvelope.entity.EnvelopeGrabberEntity;
+import lewiszlw.redenvelope.model.VerifyResult;
 import lewiszlw.redenvelope.model.req.CreateEnvelopeReq;
 import lewiszlw.redenvelope.model.ValidationResult;
 import lewiszlw.redenvelope.util.MoneyUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 /**
  * Desc:
@@ -40,6 +46,34 @@ public class RedEnvelopeValidator {
             return ValidationResult.createPassValidationResult();
         } catch (IllegalArgumentException e) {
             return ValidationResult.createFailValidationResult(e.getMessage());
+        }
+    }
+
+    public static VerifyResult verifyEntity(Integer envelopeId,
+                                            EnvelopeDetailEntity envelopeDetailEntity,
+                                            List<EnvelopeGrabberEntity> envelopeGrabberEntities) {
+        try {
+            Preconditions.checkState(null != envelopeDetailEntity, "envelopeDetailEntity为空");
+            Preconditions.checkState(envelopeDetailEntity.getRemainMoney() <= envelopeDetailEntity.getAmount(), "红包余额大于总额");
+            Preconditions.checkState(envelopeDetailEntity.getRemainSize() <= envelopeDetailEntity.getSize(), "红包余份大于总份数");
+
+            Integer allocatedAmount = 0;
+            Integer allocatedSize = 0;
+            if (!CollectionUtils.isEmpty(envelopeGrabberEntities)) {
+                allocatedSize = envelopeGrabberEntities.size();
+                for (EnvelopeGrabberEntity envelopeGrabberEntity : envelopeGrabberEntities) {
+                    allocatedAmount += envelopeGrabberEntity.getMoney();
+                }
+            }
+
+            Preconditions.checkState(allocatedAmount + envelopeDetailEntity.getRemainMoney() == envelopeDetailEntity.getAmount(),
+                    "分配出去的金额 + 剩余金额 != 总金额");
+            Preconditions.checkState(allocatedSize + envelopeDetailEntity.getRemainSize() == envelopeDetailEntity.getSize(),
+                    "分配出去的份数 + 剩余份数 != 总份数");
+
+            return VerifyResult.createPassVerifyResult(envelopeId);
+        } catch (Exception e) {
+            return VerifyResult.createFailVerifyResult(envelopeId, e.getMessage());
         }
     }
 }

@@ -1,17 +1,23 @@
 package lewiszlw.redenvelope.controller;
 
 import lewiszlw.redenvelope.annotation.RateLimit;
+import lewiszlw.redenvelope.entity.EnvelopeDetailEntity;
+import lewiszlw.redenvelope.entity.EnvelopeGrabberEntity;
+import lewiszlw.redenvelope.mapper.RedEnvelopeDetailMapper;
+import lewiszlw.redenvelope.mapper.RedEnvelopeGrabberMapper;
 import lewiszlw.redenvelope.model.GrabbingResult;
+import lewiszlw.redenvelope.model.ValidationResult;
+import lewiszlw.redenvelope.model.VerifyResult;
 import lewiszlw.redenvelope.model.WebResponse;
 import lewiszlw.redenvelope.model.req.CreateEnvelopeReq;
-import lewiszlw.redenvelope.model.ValidationResult;
-import lewiszlw.redenvelope.service.RedEnvelopeService;
 import lewiszlw.redenvelope.service.RedEnvelopeRedisService;
+import lewiszlw.redenvelope.service.RedEnvelopeService;
 import lewiszlw.redenvelope.validator.RedEnvelopeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,6 +35,12 @@ public class RedEnvelopeController {
 
     @Autowired
     private RedEnvelopeRedisService redEnvelopeRedisService;
+
+    @Autowired
+    private RedEnvelopeDetailMapper redEnvelopeDetailMapper;
+
+    @Autowired
+    private RedEnvelopeGrabberMapper redEnvelopeGrabberMapper;
 
     /**
      * 创建红包
@@ -72,6 +84,26 @@ public class RedEnvelopeController {
         }
         envelopeIds.forEach(envelopeId -> redEnvelopeRedisService.del(envelopeId));
         return WebResponse.createSuccessWebResponse();
+    }
+
+    /**
+     * 验证红包发放金额数量的正确性
+     */
+    @RequestMapping("/verify")
+    public WebResponse verify(@RequestParam("envelopeIds") List<Integer> envelopeIds) {
+        if (CollectionUtils.isEmpty(envelopeIds)) {
+            return WebResponse.createSuccessWebResponse();
+        }
+        List<VerifyResult> failVerifyResult = new ArrayList<>();
+        for (Integer envelopeId : envelopeIds) {
+            EnvelopeDetailEntity envelopeDetailEntity = redEnvelopeDetailMapper.selectOne(envelopeId);
+            List<EnvelopeGrabberEntity> envelopeGrabberEntities = redEnvelopeGrabberMapper.selectByEnvelopeId(envelopeId);
+            VerifyResult verifyResult = RedEnvelopeValidator.verifyEntity(envelopeId, envelopeDetailEntity, envelopeGrabberEntities);
+            if (!verifyResult.isPass()) {
+                failVerifyResult.add(verifyResult);
+            }
+        }
+        return WebResponse.createSuccessWebResponse(failVerifyResult);
     }
 
 }

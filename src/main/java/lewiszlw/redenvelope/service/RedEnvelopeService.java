@@ -1,5 +1,6 @@
 package lewiszlw.redenvelope.service;
 
+import com.google.common.base.Preconditions;
 import lewiszlw.redenvelope.constant.Constants;
 import lewiszlw.redenvelope.constant.ExistentStatus;
 import lewiszlw.redenvelope.converter.RedEnvelopeConverter;
