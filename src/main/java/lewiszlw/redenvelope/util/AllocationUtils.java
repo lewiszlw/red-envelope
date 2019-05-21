@@ -19,7 +19,7 @@ public class AllocationUtils {
 
     public static Random random = new Random();
 
-    // TODO 红包类型
+    // TODO 红包类型暂未考虑
 
     /**
      * 提前分配好红包

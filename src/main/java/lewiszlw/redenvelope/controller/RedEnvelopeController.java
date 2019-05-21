@@ -1,5 +1,6 @@
 package lewiszlw.redenvelope.controller;
 
+import lewiszlw.redenvelope.annotation.RateLimit;
 import lewiszlw.redenvelope.model.GrabbingResult;
 import lewiszlw.redenvelope.model.WebResponse;
 import lewiszlw.redenvelope.model.req.CreateEnvelopeReq;
@@ -47,6 +48,7 @@ public class RedEnvelopeController {
     /**
      * 抢红包
      */
+    @RateLimit
     @RequestMapping("/grab")
     public WebResponse grabEnvelope(@RequestParam(value = "envelopeId") Integer envelopeId,
                                     @RequestParam(value = "grabber") String grabber) {
@@ -55,6 +57,7 @@ public class RedEnvelopeController {
         if (!validationResult.isPass()) {
             return validationResult.transformWebResponse();
         }
+        // 抢红包
         GrabbingResult grabbingResult = redEnvelopeService.grabRedEnvelope(envelopeId, grabber);
         return grabbingResult.transformWebResponse();
     }

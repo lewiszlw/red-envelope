@@ -6,7 +6,6 @@ import lewiszlw.redenvelope.entity.EnvelopeGrabberEntity;
 import lewiszlw.redenvelope.model.redis.EnvelopeRedisModel;
 import lewiszlw.redenvelope.model.redis.GrabbingDetail;
 import lewiszlw.redenvelope.model.req.CreateEnvelopeReq;
-import lewiszlw.redenvelope.util.AllocationUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -36,9 +35,6 @@ public class RedEnvelopeConverter {
                 .setType(envelopeDetailEntity.getType())
                 .setRemainMoney(envelopeDetailEntity.getRemainMoney())
                 .setRemainSize(envelopeDetailEntity.getRemainSize())
-                // 分配金额
-                // TODO
-//                .setAllocations(AllocationUtils.allocate(envelopeDetailEntity.getRemainMoney(), envelopeDetailEntity.getRemainSize()))
                 .setGrabbingDetails(new ArrayList<>());
     }
 

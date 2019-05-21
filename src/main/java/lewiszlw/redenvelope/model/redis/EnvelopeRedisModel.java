@@ -57,12 +57,6 @@ public class EnvelopeRedisModel {
     private Integer remainSize;
 
     /**
-     * 红包切分列表
-     * 红包预先分配好每个红包大小，每分配出去一个，remove一个
-     */
-    private List<Integer> allocations;
-
-    /**
      * 红包抢到情况
      */
     private List<GrabbingDetail> grabbingDetails;

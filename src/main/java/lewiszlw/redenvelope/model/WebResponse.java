@@ -36,11 +36,7 @@ public class WebResponse {
         return new WebResponse().setStatus(true).setMsg("请求成功").setData(data);
     }
 
-    public static WebResponse createFailWebResponse(Object data) {
-        return new WebResponse().setStatus(false).setMsg("请求失败").setData(data);
-    }
-
-    public static WebResponse createFailWebResponse(String msg, Object data) {
-        return new WebResponse().setStatus(false).setMsg(msg).setData(data);
+    public static WebResponse createFailWebResponse(String msg) {
+        return new WebResponse().setStatus(false).setMsg(msg);
     }
 }

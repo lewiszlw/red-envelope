@@ -142,14 +142,15 @@ public class RedEnvelopeService {
     public void allocateAndWriteDB(EnvelopeDetailEntity envelopeDetailEntity, String grabber) {
         Integer remainSize = envelopeDetailEntity.getRemainSize();
         Integer remainMoney = envelopeDetailEntity.getRemainMoney();
-        // 分配红包金额
-        // TODO
-//        Integer allocateMoney = AllocationUtils.allocate(remainMoney, remainSize).get(0);
+
+        // 分配金额
         Integer allocateMoney = AllocationUtils.allocateV2(remainMoney, remainSize);
 
         envelopeDetailEntity.setRemainMoney(remainMoney - allocateMoney);
         envelopeDetailEntity.setRemainSize(remainSize - 1);
 
+        // TODO
+        // 从查询开始上排它锁，防止查询后，数据被更新，即解决不可重复读
         redEnvelopeDetailMapper.updateOne(envelopeDetailEntity);
 
         redEnvelopeGrabberMapper.insertOne(new EnvelopeGrabberEntity()
