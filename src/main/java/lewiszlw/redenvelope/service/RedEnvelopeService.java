@@ -15,6 +15,7 @@ import lewiszlw.redenvelope.model.req.CreateEnvelopeReq;
 import lewiszlw.redenvelope.mq.RedEnvelopeGrabbingProducer;
 import lewiszlw.redenvelope.util.AllocationUtils;
 import lewiszlw.redenvelope.util.CommonUtils;
+import lewiszlw.redenvelope.util.DisLockUtils;
 import lewiszlw.redenvelope.util.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,9 +114,15 @@ public class RedEnvelopeService {
             return;
         }
         for (GrabbingMessage grabbingMessage : grabbingMessages) {
+            // 利用mybatis来实现数据库排他锁（for update），感觉不够优雅，故采用分布式锁
+            // 加锁
+            DisLockUtils.lock(grabbingMessage.getEnvelopeId());
+
             EnvelopeDetailEntity envelopeDetailEntity = redEnvelopeDetailMapper.selectOne(grabbingMessage.getEnvelopeId());
             if (envelopeDetailEntity == null) {
                 log.error("处理mq消息：查询红包不存在, grabbingMessage: {}", JsonUtils.toJson(grabbingMessage));
+                // 释放锁
+                DisLockUtils.unlock(grabbingMessage.getEnvelopeId());
                 continue;
             }
             // 查看该用户是否已经抢到红包
@@ -135,6 +142,8 @@ public class RedEnvelopeService {
             List<EnvelopeGrabberEntity> currentEnvelopeGrabberEntities = redEnvelopeGrabberMapper
                     .selectByEnvelopeId(grabbingMessage.getEnvelopeId());
             redEnvelopeRedisService.delAndSet(currentEnvelopeDetailEntity, currentEnvelopeGrabberEntities);
+            // 释放锁
+            DisLockUtils.unlock(grabbingMessage.getEnvelopeId());
         }
     }
 
@@ -149,8 +158,7 @@ public class RedEnvelopeService {
         envelopeDetailEntity.setRemainMoney(remainMoney - allocateMoney);
         envelopeDetailEntity.setRemainSize(remainSize - 1);
 
-        // TODO
-        // 从查询开始上排它锁，防止查询后，数据被更新，即解决不可重复读
+        // 防止查询后，数据被其他线程更新，导致金额不是当前金额，即需解决不可重复读
         redEnvelopeDetailMapper.updateOne(envelopeDetailEntity);
 
         redEnvelopeGrabberMapper.insertOne(new EnvelopeGrabberEntity()

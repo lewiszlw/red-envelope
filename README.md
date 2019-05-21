@@ -1,5 +1,5 @@
 # 简介
-红包秒杀系统：模拟红包秒杀时的高并发场景，学习并实现业界成熟的秒杀项目架构。
+红包秒杀系统：模拟红包秒杀时的高并发场景，学习并实现业界成熟的秒杀架构。
 
 [调研设计笔记](https://github.com/lewiszlw/notebooks/tree/master/wheels/red-envelope)
 # 启动
