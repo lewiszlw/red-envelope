@@ -1,6 +1,5 @@
 package lewiszlw.redenvelope.service;
 
-import com.google.common.base.Preconditions;
 import lewiszlw.redenvelope.constant.Constants;
 import lewiszlw.redenvelope.constant.ExistentStatus;
 import lewiszlw.redenvelope.converter.RedEnvelopeConverter;
@@ -14,10 +13,7 @@ import lewiszlw.redenvelope.model.redis.EnvelopeRedisModel;
 import lewiszlw.redenvelope.model.redis.GrabbingDetail;
 import lewiszlw.redenvelope.model.req.CreateEnvelopeReq;
 import lewiszlw.redenvelope.mq.RedEnvelopeGrabbingProducer;
-import lewiszlw.redenvelope.util.AllocationUtils;
-import lewiszlw.redenvelope.util.CommonUtils;
-import lewiszlw.redenvelope.util.DisLockUtils;
-import lewiszlw.redenvelope.util.JsonUtils;
+import lewiszlw.redenvelope.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +44,9 @@ public class RedEnvelopeService {
 
     @Autowired
     private RedEnvelopeGrabbingProducer redEnvelopeGrabbingProducer;
+
+    @Autowired
+    private DistributedLock distributedLock;
 
     /**
      * 发红包
@@ -117,13 +116,13 @@ public class RedEnvelopeService {
         for (GrabbingMessage grabbingMessage : grabbingMessages) {
             // 利用mybatis来实现数据库排他锁（for update），感觉不够优雅，故采用分布式锁
             // 加锁
-            DisLockUtils.lock(grabbingMessage.getEnvelopeId());
+            distributedLock.lock(grabbingMessage.getEnvelopeId());
 
             EnvelopeDetailEntity envelopeDetailEntity = redEnvelopeDetailMapper.selectOne(grabbingMessage.getEnvelopeId());
             if (envelopeDetailEntity == null) {
                 log.error("处理mq消息：查询红包不存在, grabbingMessage: {}", JsonUtils.toJson(grabbingMessage));
                 // 释放锁
-                DisLockUtils.unlock(grabbingMessage.getEnvelopeId());
+                distributedLock.unlock(grabbingMessage.getEnvelopeId());
                 continue;
             }
             // 查看该用户是否已经抢到红包
@@ -144,7 +143,7 @@ public class RedEnvelopeService {
                     .selectByEnvelopeId(grabbingMessage.getEnvelopeId());
             redEnvelopeRedisService.delAndSet(currentEnvelopeDetailEntity, currentEnvelopeGrabberEntities);
             // 释放锁
-            DisLockUtils.unlock(grabbingMessage.getEnvelopeId());
+            distributedLock.unlock(grabbingMessage.getEnvelopeId());
         }
     }
 
@@ -167,6 +166,8 @@ public class RedEnvelopeService {
                 .setGrabber(grabber)
                 .setMoney(allocateMoney)
         );
+        log.info("分配金额, envelopeDetailEntity: {}, grabber: {}, allocatedMoney: {}",
+                JsonUtils.toJson(envelopeDetailEntity), grabber, allocateMoney);
     }
 
     private GrabbingResult doGrab(Integer envelopeId, String grabber) {
