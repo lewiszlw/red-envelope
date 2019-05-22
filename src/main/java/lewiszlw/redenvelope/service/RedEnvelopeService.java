@@ -51,7 +51,7 @@ public class RedEnvelopeService {
     /**
      * 发红包
      */
-    public void insertRedEnvelope(CreateEnvelopeReq req) {
+    public Integer insertRedEnvelope(CreateEnvelopeReq req) {
         // 插入数据库
         EnvelopeDetailEntity envelopeDetailEntity = RedEnvelopeConverter.convertToEnvelopeDetailEntity(req);
         envelopeDetailEntity.setRemainMoney(envelopeDetailEntity.getAmount());
@@ -59,6 +59,7 @@ public class RedEnvelopeService {
         redEnvelopeDetailMapper.insertOne(envelopeDetailEntity);
         // 存入redis
         redEnvelopeRedisService.setAfterCreate(envelopeDetailEntity);
+        return envelopeDetailEntity.getId();
     }
 
     /**

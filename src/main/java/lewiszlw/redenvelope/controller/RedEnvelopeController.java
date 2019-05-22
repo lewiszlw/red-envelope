@@ -53,8 +53,8 @@ public class RedEnvelopeController {
             return validationResult.transformWebResponse();
         }
         // 创建红包并存入redis
-        redEnvelopeService.insertRedEnvelope(req);
-        return WebResponse.createSuccessWebResponse();
+        Integer envelopeId = redEnvelopeService.insertRedEnvelope(req);
+        return WebResponse.createSuccessWebResponse(envelopeId);
     }
 
     /**
@@ -103,7 +103,11 @@ public class RedEnvelopeController {
                 failVerifyResult.add(verifyResult);
             }
         }
-        return WebResponse.createSuccessWebResponse(failVerifyResult);
+        if (CollectionUtils.isEmpty(failVerifyResult)) {
+            return WebResponse.createSuccessWebResponse();
+        } else {
+            return WebResponse.createFailWebResponse("验证失败", failVerifyResult);
+        }
     }
 
 }

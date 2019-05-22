@@ -39,4 +39,8 @@ public class WebResponse {
     public static WebResponse createFailWebResponse(String msg) {
         return new WebResponse().setStatus(false).setMsg(msg);
     }
+
+    public static WebResponse createFailWebResponse(String msg, Object data) {
+        return new WebResponse().setStatus(false).setMsg(msg).setData(data);
+    }
 }
